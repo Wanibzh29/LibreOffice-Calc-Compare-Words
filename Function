@@ -1,0 +1,51 @@
+Function ComparerMots(mot1 As Variant, mot2 As Variant) As String
+    Dim i As Integer, j As Integer
+    Dim sMot1 As String, sMot2 As String
+    Dim filteredMot1 As String, filteredMot2 As String
+    Dim lettresCommunes As String
+    Dim used() As Boolean
+    Dim pourcentage As Double
+    Dim maxLen As Integer
+    
+    ' Conversion en chaînes et gestion des valeurs vides
+    If IsNull(mot1) Or IsEmpty(mot1) Then sMot1 = "" Else sMot1 = CStr(mot1)
+    If IsNull(mot2) Or IsEmpty(mot2) Then sMot2 = "" Else sMot2 = CStr(mot2)
+    
+    ' Supprimer les caractères non-alphanumériques
+    filteredMot1 = ""
+    For i = 1 To Len(sMot1)
+        If Mid(sMot1, i, 1) Like "[A-Za-z0-9]" Then filteredMot1 = filteredMot1 & Mid(sMot1, i, 1)
+    Next i
+    filteredMot2 = ""
+    For i = 1 To Len(sMot2)
+        If Mid(sMot2, i, 1) Like "[A-Za-z0-9]" Then filteredMot2 = filteredMot2 & Mid(sMot2, i, 1)
+    Next i
+    
+    ' Initialiser
+    lettresCommunes = ""
+    ReDim used(1 To Len(filteredMot2))
+    
+    ' Compter les lettres communes (ordre du premier mot)
+    For i = 1 To Len(filteredMot1)
+        Dim lettre As String
+        lettre = Mid(filteredMot1, i, 1)
+        For j = 1 To Len(filteredMot2)
+            If Not used(j) And Mid(filteredMot2, j, 1) = lettre Then
+                lettresCommunes = lettresCommunes & lettre
+                used(j) = True
+                Exit For
+            End If
+        Next j
+    Next i
+    
+    ' Calcul du pourcentage basé sur le mot le plus long
+    maxLen = Len(filteredMot1)
+    If Len(filteredMot2) > maxLen Then maxLen = Len(filteredMot2)
+    If maxLen > 0 Then
+        pourcentage = Len(lettresCommunes) / maxLen * 100
+    Else
+        pourcentage = 0
+    End If
+    
+    ComparerMots = Format(pourcentage, "0.00") & "%"
+End Function
